@@ -40,10 +40,14 @@ public class Game {
         int playerTurn = 0;
         printBoard();
         while(!this.win){
-            int move = players[playerTurn % 2].getMove();
-            this.win = move(move, playerTurn % 2);
-            printBoard();
-            playerTurn++;
+            boolean turnEnded = false;
+            while(!turnEnded) {
+                int move = players[playerTurn % 2].getMove();
+                turnEnded = move(move, playerTurn % 2);
+                printBoard();
+                playerTurn++;
+            }
+            this.win = checkWin();
         }
     }
 
@@ -75,6 +79,17 @@ public class Game {
             board[row][position]++;
             stones--;
         }
+        if(row == initialRow){
+            if(position == 6) { // if ends up in own space
+                return false;
+            } else if(board[row][position] > 1){
+                move(position, row);
+            }
+        }
+        return true;
+    }
+
+    public boolean checkWin(){
         if(board[0][pitsEach] + board[1][pitsEach] == stonesEach * pitsEach * 2)
             return true;
         return false;
