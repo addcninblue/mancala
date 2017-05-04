@@ -17,6 +17,7 @@ public class Game {
         players = new Player[]{null, null};
         this.win = false;
         board = new int[2][pitsEach + 1];
+        board = new int[2][pitsEach + 1];
         for(int[] row : board){
             for(int i = 0; i < row.length - 1; i++){
                 row[i] = stonesEach;
@@ -33,7 +34,6 @@ public class Game {
                 row[i] = stonesEach;
             }
         }
-//        printBoard();
     }
 
     public void start(){
@@ -62,10 +62,8 @@ public class Game {
      * @return whether game is over or not
      */
     public boolean move(int position, int row){
-//        System.out.println(row);
         int initialRow = row;
         int stones = board[row][position];
-        int initialStones = stones;
         board[row][position] = 0;
         while(stones > 0){
             position++;
@@ -75,9 +73,6 @@ public class Game {
             position %= pitsEach + 1;
             board[row][position]++;
             stones--;
-//            System.out.print(row + " ");
-//            System.out.println(position);
-//            printBoard();
         }
         if(board[0][pitsEach] + board[1][pitsEach] == stonesEach * pitsEach * 2)
             return true;
@@ -135,23 +130,30 @@ public class Game {
     }
 
     public static void main(String args[]){
-//        game.addPlayer(new Player("Addison", "Chan"));
-        int bestWeight = 0;
-        int bestDepth = 0;
-        for(int i = 1; i < 10; i++){
-            for(int j = 1; i < 10; j++){
-                Game game = new Game();
-                game.addPlayer(new AI(game.getBoard(), 0));
-                game.addPlayer(new AI(game.getBoard(), 1, i, j));
-                game.start();
-                boolean playerTwoWon = game.getResults();
-                if(playerTwoWon){
-                    bestWeight = i;
-                    bestDepth = j;
-                }
-            }
-        }
-        System.out.print("Best Weight: " + bestWeight);
-        System.out.print("Best Depth: " + bestDepth);
+        Game game = new Game();
+        game.addPlayer(new Player("Addison", "Chan"));
+//        game.addPlayer(new AI(game.getBoard(), 0));
+        game.addPlayer(new AI(game.getBoard(), 1));
+        game.start();
+        // training
+//        int bestWeight = 8;
+//        int bestDepth = 5;
+//        for(int k = 0; k < 3; k++){
+//            for(int i = 1; i < 10; i++) {
+//                for (int j = 1; j < 6; j++) {
+//                    Game game = new Game();
+//                    game.addPlayer(new AI(game.getBoard(), 0, bestWeight, bestDepth));
+//                    game.addPlayer(new AI(game.getBoard(), 1, i, j));
+//                    game.start();
+//                    boolean playerTwoWon = game.getResults();
+//                    if (playerTwoWon) {
+//                        bestWeight = i;
+//                        bestDepth = j;
+//                    }
+//                }
+//            }
+//        }
+//        System.out.print("Best Weight: " + bestWeight);
+//        System.out.print("Best Depth: " + bestDepth);
     }
 }

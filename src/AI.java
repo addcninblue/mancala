@@ -14,7 +14,8 @@ public class AI extends Player{
     public AI(int[][] board, int playerNumber){
         this.board = board;
         this.playerNumber = playerNumber;
-        this.weight = 4;
+        this.weight = 8;
+        this.depth = 5;
     }
 
     public AI(int[][] board, int playerNumber, int weight, int depth){
@@ -33,7 +34,6 @@ public class AI extends Player{
      */
     public int simulateMove(int position, int row){
         int pitsEach = this.board[0].length;
-//        System.out.println(row);
         int initialRow = row;
         int stones = board[row][position];
         int initialStones = stones;
@@ -46,8 +46,6 @@ public class AI extends Player{
             position %= pitsEach;
             board[row][position]++;
             stones--;
-//            System.out.print(row + " ");
-//            System.out.println(position);
         }
         return initialStones;
     }
@@ -59,9 +57,7 @@ public class AI extends Player{
      * @param numberOfStones number of stones originally there
      */
     public void undoMove(int position, int row, int numberOfStones){
-//        System.out.println("undo");
         int pitsEach = this.board[0].length;
-//        System.out.println(row);
         int initialRow = row;
         int initialStones = numberOfStones;
         int initialPos = position;
@@ -73,8 +69,6 @@ public class AI extends Player{
             position %= pitsEach;
             board[row][position]--;
             numberOfStones--;
-//            System.out.print(row + " ");
-//            System.out.println(position);
         }
         board[initialRow][initialPos] = initialStones;
     }
