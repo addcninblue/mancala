@@ -25,7 +25,7 @@ public class Game {
         }
     }
 
-    public Game(Player p1, Player p2){
+    public Game(Human p1, Human p2){
         players = new Player[]{p1, p2};
         this.win = false;
         board = new int[2][pitsEach + 1];
@@ -38,6 +38,7 @@ public class Game {
 
     public void start(){
         int playerTurn = 0;
+        printBoard();
         while(!this.win){
             int move = players[playerTurn % 2].getMove();
             this.win = move(move, playerTurn % 2);
@@ -131,8 +132,9 @@ public class Game {
 
     public static void main(String args[]){
         Game game = new Game();
-        game.addPlayer(new Player("Addison", "Chan"));
+//        game.addPlayer(new Human("Addison", "Chan"));
 //        game.addPlayer(new AI(game.getBoard(), 0));
+        game.addPlayer(new Human());
         game.addPlayer(new AI(game.getBoard(), 1));
         game.start();
         // training

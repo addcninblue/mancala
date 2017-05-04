@@ -1,11 +1,10 @@
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by addison on 5/1/17.
  */
-public class AI extends Player{
+public class AI implements Player {
     int[][] board;
     int playerNumber;
     int weight;
