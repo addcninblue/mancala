@@ -1,3 +1,4 @@
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 /**
@@ -21,8 +22,20 @@ public class Player {
     }
 
     public int getMove(){
-        System.out.format("%s's move: ", this.firstName);
-        int choice = in.nextInt();
+        int choice = -1;
+        while(true) {
+            try {
+                System.out.format("%s's move: ", this.firstName);
+                choice = in.nextInt();
+                if(choice < 0 || choice > 5)
+                    throw new Exception("out of bounds");
+                break;
+            } catch (Exception e) {
+                System.out.println("That was not a valid input.");
+                in.nextLine();
+                choice = -1;
+            }
+        }
         return choice;
     }
 
