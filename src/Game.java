@@ -46,8 +46,8 @@ public class Game {
                 int move = players[playerTurn % 2].getMove();
                 turnEnded = move(move, playerTurn % 2);
                 printBoard();
-                playerTurn++;
             }
+            playerTurn++;
             this.win = checkWin();
         }
     }
@@ -84,7 +84,7 @@ public class Game {
             if(position == 6) { // if ends up in own space
                 return false;
             } else if(board[row][position] > 1){
-                move(position, row);
+                return move(position, row);
             }
         }
         return true;

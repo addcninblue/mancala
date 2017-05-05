@@ -9,46 +9,73 @@ public class AI implements Player {
     int playerNumber;
     int weight;
     int depth;
+    ArrayList<Integer> stonesUsed;
+    ArrayList<Boolean> chained; // when one pit ends with another one
 
     public AI(int[][] board, int playerNumber){
-        this.board = board;
-        this.playerNumber = playerNumber;
-        this.weight = 8;
-        this.depth = 5;
+        this(board, playerNumber, 8, 5);
     }
 
     public AI(int[][] board, int playerNumber, int weight, int depth){
         this.board = board;
         this.playerNumber = playerNumber;
-        this.weight = 4;
         this.weight = weight;
         this.depth = depth;
+        this.stonesUsed = new ArrayList<>();
+        this.chained = new ArrayList<>();
     }
 
     /**
      * Moves given the position and row
-     * @param position positioLatest commit 577df6a  4 hours ago￼ addcninblue update
-.idea	update	4 hours ago
-n of pit
+     * @param position of pit
      * @param row playerNumber
      * @return number of stones removed
      */
-    public int simulateMove(int position, int row){
-        int pitsEach = this.board[0].length;
+    public boolean simulateMove(int position, int row){
+        int pitsEach = this.board[0].length - 1;
         int initialRow = row;
         int stones = board[row][position];
-        int initialStones = stones;
+        this.stonesUsed.add(0, stones);
         board[row][position] = 0;
         while(stones > 0){
             position++;
             if(row != initialRow && position == pitsEach) // if ends up in enemy home
                 position++;
-            row = (row + position / (pitsEach)) % 2;
-            position %= pitsEach;
+            row = (row + position / (pitsEach + 1)) % 2;
+            position %= pitsEach + 1;
             board[row][position]++;
             stones--;
         }
-        return initialStones;
+        if(row == initialRow){
+            if(position == 6) { // if ends up in own space
+                chained.add(0, false);
+                return false;
+            } else if(board[row][position] > 1){
+                boolean result = simulateMove(position, row);
+                chained.add(0, result);
+                return result;
+            }
+        }
+        chained.add(0, true);
+        return true;
+    }
+
+    public void undoMoveNew(int position, int row){
+        int numberOfStones = this.stonesUsed.remove(0);
+        int pitsEach = this.board[0].length;
+        while(numberOfStones > 0){
+            System.out.println(row + " " + position);
+            board[row][position]--;
+            position--;
+            if(row != playerNumber && position == pitsEach)
+                position--;
+            row = (row + position / pitsEach) % 2;
+            position = (position + pitsEach) % pitsEach;
+            numberOfStones--;
+        }
+        if(this.chained.remove(0)){
+            undoMoveNew(position, row);
+        }
     }
 
     /**
@@ -92,8 +119,8 @@ n of pit
         } else {
             for(int i : nextMoves){
                 // do move
-                int stonesUsed = simulateMove(i, maximize ? playerNumber : (playerNumber + 1) % 2);
-                if(maximize){
+                boolean goAgain = simulateMove(i, maximize ? playerNumber : (playerNumber + 1) % 2);
+                if(maximize ^ !goAgain){
                     currentScore = miniMax(depth - 1, false)[0];
                     if(currentScore > bestScore){
                         bestScore = currentScore;
@@ -107,7 +134,7 @@ n of pit
                     }
                 }
                 // undo move
-                undoMove(i, maximize ? playerNumber : (playerNumber + 1) % 2, stonesUsed);
+                undoMoveNew(i, maximize ? playerNumber : (playerNumber + 1) % 2);
             }
         }
         return new int[]{bestScore, best};
