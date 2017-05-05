@@ -39,6 +39,7 @@ public class Game {
     public void start(){
         int playerTurn = 0;
         printBoard();
+        System.out.println();
         while(!this.win){
             boolean turnEnded = false;
             while(!turnEnded) {
@@ -96,45 +97,11 @@ public class Game {
     }
 
     public void printBoard(){
-        // top row
-        System.out.print("┌");
-        for(int i = 1; i< board[0].length - 1; i++){
-            System.out.print("──┬");
-        }
-        System.out.println("──┐");
-
-        // row 0
-        System.out.print("│");
-        for(int i = board[0].length - 2; i >= 0; i--){
-            System.out.format("%2d", board[0][i]);
-            System.out.print("│");
-        }
-        System.out.println();
-
-        // middle
-        System.out.print("├");
-        for(int i = 0; i < board[0].length - 2; i++){
-            System.out.print("──┼");
-        }
-        System.out.print("──┤");
-        System.out.println();
-
-        // row 1
-        System.out.print("│");
-        for(int i = 0; i < board[1].length - 1; i++){
-            System.out.format("%2d", board[1][i]);
-            System.out.print("│");
-        }
-        System.out.println();
-
-        System.out.print("└");
-        for(int i = 1; i< board[0].length - 1; i++){
-            System.out.print("──┴");
-        }
-        System.out.println("──┘");
-        System.out.format("%s's Home: %d.\n", players[0].getFirstName(), board[0][pitsEach]);
-        System.out.format("%s's Home: %d.\n", players[1].getFirstName(), board[1][pitsEach]);
-
+        // I apologize for this ugliness
+        // Built with Vim and a lot of patience
+        String str = "     5  4  3  2  1  0\n┌──┬──┬──┬──┬──┬──┬──┬──┐\n│  │%2d│%2d│%2d│%2d│%2d│%2d│  │\n│%2d├──┼──┼──┼──┼──┼──┤%2d│\n│  │%2d│%2d│%2d│%2d│%2d│%2d│  │\n└──┴──┴──┴──┴──┴──┴──┴──┘\n     0  1  2  3  4  5\n";
+        System.out.format(str, board[0][5], board[0][4], board[0][3], board[0][2], board[0][1], board[0][0], board[0][6],
+                board[1][6], board[1][0], board[1][1], board[1][2], board[1][3], board[1][4], board[1][5]);
     }
 
     public boolean getResults(){
