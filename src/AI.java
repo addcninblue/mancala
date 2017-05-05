@@ -27,7 +27,9 @@ public class AI implements Player {
 
     /**
      * Moves given the position and row
-     * @param position position of pit
+     * @param position positioLatest commit 577df6a  4 hours ago￼ addcninblue update
+.idea	update	4 hours ago
+n of pit
      * @param row playerNumber
      * @return number of stones removed
      */
