@@ -11,6 +11,9 @@ public class AI implements Player {
     int depth;
     ArrayList<Integer> stonesUsed;
     ArrayList<Boolean> chained; // when one pit ends with another one
+    ArrayList<Integer> initialRows;
+    ArrayList<Integer> finalRows;
+    ArrayList<Integer> finalPositions;
 
     public AI(int[][] board, int playerNumber){
         this(board, playerNumber, 8, 5);
@@ -23,6 +26,9 @@ public class AI implements Player {
         this.depth = depth;
         this.stonesUsed = new ArrayList<>();
         this.chained = new ArrayList<>();
+        this.initialRows = new ArrayList<>();
+        this.finalRows = new ArrayList<>();
+        this.finalPositions = new ArrayList<>();
     }
 
     /**
@@ -36,6 +42,7 @@ public class AI implements Player {
         int initialRow = row;
         int stones = board[row][position];
         this.stonesUsed.add(0, stones);
+        this.initialRows.add(0, row);
         board[row][position] = 0;
         while(stones > 0){
             position++;
@@ -49,32 +56,44 @@ public class AI implements Player {
         if(row == initialRow){
             if(position == 6) { // if ends up in own space
                 chained.add(0, false);
+                finalPositions.add(0, position);
+                this.finalRows.add(0, row);
                 return false;
             } else if(board[row][position] > 1){
                 boolean result = simulateMove(position, row);
-                chained.add(0, result);
+                chained.add(0, true);
+                finalPositions.add(0, position);
+                this.finalRows.add(0, row);
                 return result;
             }
         }
-        chained.add(0, true);
+        chained.add(0, false);
+        finalPositions.add(0, position);
+        this.finalRows.add(0, row);
         return true;
     }
 
-    public void undoMoveNew(int position, int row){
+    public void undoMoveNew(int row){
         int numberOfStones = this.stonesUsed.remove(0);
+        int numberOfStonesBackup = numberOfStones;
         int pitsEach = this.board[0].length;
+        int initialRow = this.initialRows.remove(0);
+        int position = finalPositions.remove(0);
+        row = this.finalRows.remove(0);
         while(numberOfStones > 0){
-            System.out.println(row + " " + position);
+            printBoard();
             board[row][position]--;
             position--;
-            if(row != playerNumber && position == pitsEach)
+            if(row != initialRow && position == pitsEach)
                 position--;
             row = (row + position / pitsEach) % 2;
             position = (position + pitsEach) % pitsEach;
             numberOfStones--;
         }
+        System.out.println(row + " " + position);
+        board[row][position] = numberOfStonesBackup; // i apologize
         if(this.chained.remove(0)){
-            undoMoveNew(position, row);
+            undoMoveNew(row);
         }
     }
 
@@ -134,7 +153,7 @@ public class AI implements Player {
                     }
                 }
                 // undo move
-                undoMoveNew(i, maximize ? playerNumber : (playerNumber + 1) % 2);
+                undoMoveNew(maximize ? playerNumber : (playerNumber + 1) % 2);
             }
         }
         return new int[]{bestScore, best};
@@ -171,9 +190,19 @@ public class AI implements Player {
         return sum;
     }
 
+    public void printBoard(){
+        // I apologize for this ugliness
+        // Built with Vim and a lot of patience
+        String str = "     5  4  3  2  1  0\n┌──┬──┬──┬──┬──┬──┬──┬──┐\n│  │%2d│%2d│%2d│%2d│%2d│%2d│  │\n│%2d├──┼──┼──┼──┼──┼──┤%2d│\n│  │%2d│%2d│%2d│%2d│%2d│%2d│  │\n└──┴──┴──┴──┴──┴──┴──┴──┘\n     0  1  2  3  4  5\n";
+        System.out.format(str, board[0][5], board[0][4], board[0][3], board[0][2], board[0][1], board[0][0], board[0][6],
+                board[1][6], board[1][0], board[1][1], board[1][2], board[1][3], board[1][4], board[1][5]);
+    }
+
+
     @Override
     public int getMove(){
-        int choice = miniMax(depth, true)[1];
+        int choice = miniMax(1, true)[1]; // debug
+//        int choice = miniMax(depth, true)[1];
         System.out.println("Computer chose " + choice);
         return (choice >= 0) ? choice : 0;
     }
