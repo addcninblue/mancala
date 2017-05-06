@@ -60,10 +60,10 @@ public class AI implements Player {
                 this.finalRows.add(0, row);
                 return false;
             } else if(board[row][position] > 1){
-                boolean result = simulateMove(position, row);
                 chained.add(0, true);
                 finalPositions.add(0, position);
                 this.finalRows.add(0, row);
+                boolean result = simulateMove(position, row);
                 return result;
             }
         }
@@ -81,18 +81,23 @@ public class AI implements Player {
         int position = finalPositions.remove(0);
         row = this.finalRows.remove(0);
         while(numberOfStones > 0){
+            System.out.println(row + " " + position);
             printBoard();
             board[row][position]--;
             position--;
             if(row != initialRow && position == pitsEach)
                 position--;
-            row = (row + position / pitsEach) % 2;
+            row = (row + (pitsEach - position - 1) / pitsEach) % 2;
+//            position %= pitsEach;
             position = (position + pitsEach) % pitsEach;
             numberOfStones--;
         }
-        System.out.println(row + " " + position);
         board[row][position] = numberOfStonesBackup; // i apologize
-        if(this.chained.remove(0)){
+        printBoard();
+        this.chained.remove(0);;
+        boolean doAgain = this.chained.size() != 0 && this.chained.get(0);
+        System.out.println(doAgain);
+        if(doAgain){
             undoMoveNew(row);
         }
     }
@@ -138,6 +143,7 @@ public class AI implements Player {
         } else {
             for(int i : nextMoves){
                 // do move
+                System.out.println("Doing move");
                 boolean goAgain = simulateMove(i, maximize ? playerNumber : (playerNumber + 1) % 2);
                 if(maximize ^ !goAgain){
                     currentScore = miniMax(depth - 1, false)[0];
@@ -153,6 +159,7 @@ public class AI implements Player {
                     }
                 }
                 // undo move
+                System.out.println("Undoing move");
                 undoMoveNew(maximize ? playerNumber : (playerNumber + 1) % 2);
             }
         }
