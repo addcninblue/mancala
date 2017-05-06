@@ -14,18 +14,10 @@ public class Game {
     //   0 1 2 3 4 5 6
 
     public Game(){
-        players = new Player[]{null, null};
-        this.win = false;
-        board = new int[2][pitsEach + 1];
-        board = new int[2][pitsEach + 1];
-        for(int[] row : board){
-            for(int i = 0; i < row.length - 1; i++){
-                row[i] = stonesEach;
-            }
-        }
+        this(null, null);
     }
 
-    public Game(Human p1, Human p2){
+    public Game(Player p1, Player p2){
         players = new Player[]{p1, p2};
         this.win = false;
         board = new int[2][pitsEach + 1];
@@ -114,9 +106,9 @@ public class Game {
 
     public static void main(String args[]){
         Game game = new Game();
-//        game.addPlayer(new Human("Addison", "Chan"));
+        game.addPlayer(new Human("Addison", "Chan"));
 //        game.addPlayer(new AI(game.getBoard(), 0));
-        game.addPlayer(new Human());
+//        game.addPlayer(new Human());
         game.addPlayer(new AI(game.getBoard(), 1));
         game.start();
         // training

@@ -81,48 +81,20 @@ public class AI implements Player {
         int position = finalPositions.remove(0);
         row = this.finalRows.remove(0);
         while(numberOfStones > 0){
-            System.out.println(row + " " + position);
-            printBoard();
             board[row][position]--;
             position--;
             if(row != initialRow && position == pitsEach)
                 position--;
             row = (row + (pitsEach - position - 1) / pitsEach) % 2;
-//            position %= pitsEach;
             position = (position + pitsEach) % pitsEach;
             numberOfStones--;
         }
         board[row][position] = numberOfStonesBackup; // i apologize
-        printBoard();
         this.chained.remove(0);;
         boolean doAgain = this.chained.size() != 0 && this.chained.get(0);
-        System.out.println(doAgain);
         if(doAgain){
             undoMoveNew(row);
         }
-    }
-
-    /**
-     * Moves given the position and row
-     * @param position original position of pit
-     * @param row playerNumber
-     * @param numberOfStones number of stones originally there
-     */
-    public void undoMove(int position, int row, int numberOfStones){
-        int pitsEach = this.board[0].length;
-        int initialRow = row;
-        int initialStones = numberOfStones;
-        int initialPos = position;
-        while(numberOfStones > 0){
-            position++;
-            if(row != initialRow && position == pitsEach) // if ends up in enemy home
-                position++;
-            row = (row + position / (pitsEach)) % 2;
-            position %= pitsEach;
-            board[row][position]--;
-            numberOfStones--;
-        }
-        board[initialRow][initialPos] = initialStones;
     }
 
     /**
@@ -143,7 +115,6 @@ public class AI implements Player {
         } else {
             for(int i : nextMoves){
                 // do move
-                System.out.println("Doing move");
                 boolean goAgain = simulateMove(i, maximize ? playerNumber : (playerNumber + 1) % 2);
                 if(maximize ^ !goAgain){
                     currentScore = miniMax(depth - 1, false)[0];
@@ -159,7 +130,6 @@ public class AI implements Player {
                     }
                 }
                 // undo move
-                System.out.println("Undoing move");
                 undoMoveNew(maximize ? playerNumber : (playerNumber + 1) % 2);
             }
         }
@@ -208,7 +178,7 @@ public class AI implements Player {
 
     @Override
     public int getMove(){
-        int choice = miniMax(1, true)[1]; // debug
+        int choice = miniMax(2, true)[1]; // debug
 //        int choice = miniMax(depth, true)[1];
         System.out.println("Computer chose " + choice);
         return (choice >= 0) ? choice : 0;
