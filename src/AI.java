@@ -5,73 +5,20 @@ import java.util.List;
  * Created by addison on 5/1/17.
  */
 public class AI implements Player {
-    int[][] board;
+    Board board;
     int playerNumber;
     int weight;
     int depth;
 
-    public AI(int[][] board, int playerNumber){
-        this.board = board;
-        this.playerNumber = playerNumber;
-        this.weight = 8;
-        this.depth = 5;
+    public AI(Board board, int playerNumber){
+        this(board, playerNumber, 8, 5);
     }
 
-    public AI(int[][] board, int playerNumber, int weight, int depth){
+    public AI(Board board, int playerNumber, int weight, int depth){
         this.board = board;
         this.playerNumber = playerNumber;
-        this.weight = 4;
         this.weight = weight;
         this.depth = depth;
-    }
-
-    /**
-     * Moves given the position and row
-     * @param position positioLatest commit 577df6a  4 hours ago￼ addcninblue update
-.idea	update	4 hours ago
-n of pit
-     * @param row playerNumber
-     * @return number of stones removed
-     */
-    public int simulateMove(int position, int row){
-        int pitsEach = this.board[0].length;
-        int initialRow = row;
-        int stones = board[row][position];
-        int initialStones = stones;
-        board[row][position] = 0;
-        while(stones > 0){
-            position++;
-            if(row != initialRow && position == pitsEach) // if ends up in enemy home
-                position++;
-            row = (row + position / (pitsEach)) % 2;
-            position %= pitsEach;
-            board[row][position]++;
-            stones--;
-        }
-        return initialStones;
-    }
-
-    /**
-     * Moves given the position and row
-     * @param position original position of pit
-     * @param row playerNumber
-     * @param numberOfStones number of stones originally there
-     */
-    public void undoMove(int position, int row, int numberOfStones){
-        int pitsEach = this.board[0].length;
-        int initialRow = row;
-        int initialStones = numberOfStones;
-        int initialPos = position;
-        while(numberOfStones > 0){
-            position++;
-            if(row != initialRow && position == pitsEach) // if ends up in enemy home
-                position++;
-            row = (row + position / (pitsEach)) % 2;
-            position %= pitsEach;
-            board[row][position]--;
-            numberOfStones--;
-        }
-        board[initialRow][initialPos] = initialStones;
     }
 
     /**
@@ -92,8 +39,9 @@ n of pit
         } else {
             for(int i : nextMoves){
                 // do move
-                int stonesUsed = simulateMove(i, maximize ? playerNumber : (playerNumber + 1) % 2);
-                if(maximize){
+                board.saveState(true);
+                boolean goAgain = board.move(i, maximize ? playerNumber : (playerNumber + 1) % 2, true);
+                if(maximize ^ !goAgain){
                     currentScore = miniMax(depth - 1, false)[0];
                     if(currentScore > bestScore){
                         bestScore = currentScore;
@@ -107,7 +55,7 @@ n of pit
                     }
                 }
                 // undo move
-                undoMove(i, maximize ? playerNumber : (playerNumber + 1) % 2, stonesUsed);
+                board.undoState();
             }
         }
         return new int[]{bestScore, best};
@@ -115,8 +63,9 @@ n of pit
 
     private ArrayList<Integer> generateMoves(int playerNumber){
         ArrayList<Integer> moves = new ArrayList<>();
-        for(int i = 0; i < board[0].length - 1; i++){
-            if(board[playerNumber][i] != 0){
+        int[] row = board.getRow(playerNumber);
+        for(int i = 0; i < row.length - 1; i++){
+            if(row[i] != 0){
                 moves.add(i);
             }
         }
@@ -125,44 +74,45 @@ n of pit
 
     private int evaluate(){
         int score = 0;
-        for(int i = 0; i < board[0].length - 1; i++){
-            score += board[playerNumber][i]; // points weighted at 1
-            score -= board[(playerNumber + 1) % 2][i]; // points in opponent
+        int[] mySide = this.board.getRow(playerNumber);
+        int[] opponentSide = this.board.getRow((playerNumber + 1) % 2);
+        for(int i = 0; i < mySide.length - 1; i++){
+            score += (mySide[i] > i + 1) ? -(mySide[i] - i - 1) : mySide[i]; // points weighted at 1
+            score -= (opponentSide[i] > i + 1) ? -(opponentSide[i] - i - 1) : opponentSide[i]; // points in opponent
         }
-        score += board[playerNumber][6] * weight; // points in personal, weighted at 4
-        score -= board[(playerNumber + 1) % 2][6] * weight; // points in opponent
+        score += mySide[6] * weight; // points in personal
+        score -= opponentSide[6] * weight; // points in opponent
         return score;
-    }
-
-    private int numOfPieces(){
-        int sum = 0;
-        for(int[] row : board){
-            for(int i : row){
-                sum += i;
-            }
-        }
-        return sum;
     }
 
     @Override
     public int getMove(){
-        int choice = miniMax(depth, true)[1];
-        System.out.println("Computer chose " + choice);
-        return (choice >= 0) ? choice : 0;
+//        int choice = miniMax(5, true)[1]; // debug
+        int[] row = board.getRow(playerNumber);
+        for(int i = row.length - 2; i >= 0; i--){
+            if(row[i] == row.length - i - 1) {
+                System.out.println("Computer" + playerNumber + " chose " + i);
+                return i;
+            }
+        }
+        int[] results = miniMax(depth, true);
+        System.out.println("Computer chose " + results[1]);
+        System.out.println("Advantage: " + results[0]);
+        return (results[1] >= 0) ? results[1] : 0;
     }
 
     @Override
     public String getName(){
-        return "AI";
+        return "Computer";
     }
 
     @Override
     public String getFirstName(){
-        return "AI";
+        return "Computer";
     }
 
     @Override
     public String getLastName(){
-        return "AI";
+        return "Computer";
     }
 }
