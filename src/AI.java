@@ -91,13 +91,12 @@ public class AI implements Player {
         int[] row = board.getRow(playerNumber);
         for(int i = row.length - 2; i >= 0; i--){
             if(row[i] == row.length - i - 1) {
-                System.out.println("Computer" + playerNumber + " chose " + i);
+                System.out.println("Computer chose " + i);
                 return i;
             }
         }
         int[] results = miniMax(depth, true);
         System.out.println("Computer chose " + results[1]);
-        System.out.println("Advantage: " + results[0]);
         return (results[1] >= 0) ? results[1] : 0;
     }
 

@@ -1,3 +1,6 @@
+import java.util.InputMismatchException;
+import java.util.Scanner;
+
 /**
  * Created by addison on 5/1/17.
  */
@@ -61,10 +64,45 @@ public class Game {
         return board;
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         Game game = new Game();
-        game.addPlayer(new Human());
-        game.addPlayer(new AI(game.getBoard(), 1));
+        Scanner in = new Scanner(System.in);
+        System.out.println("1. Play against another person.\n2. Play against Computer");
+        int choice = 0;
+        while(true){
+            try {
+                choice = in.nextInt();
+                if(choice > 2 || choice < 1)
+                    throw new Exception("Not a valid number.");
+                break;
+            } catch(Exception e){
+                System.out.println("Sorry, that wasn't a valid choice.");
+            }
+        }
+        if(choice == 1) {
+            game.addPlayer(new Human());
+            game.addPlayer(new Human());
+        } else {
+            System.out.println("Would you like to be player one or player two?");
+            while(true){
+                try {
+                    choice = in.nextInt();
+                    if(choice > 2 || choice < 1)
+                        throw new Exception("Not a valid number.");
+                    break;
+                } catch(Exception e){
+                    System.out.println("Sorry, that wasn't a valid choice.");
+                }
+            }
+            if(choice == 1) {
+                game.addPlayer(new Human());
+                game.addPlayer(new AI(game.getBoard(), 1));
+            } else {
+                game.addPlayer(new AI(game.getBoard(), 0));
+                game.addPlayer(new Human());
+
+            }
+        }
         game.start();
     }
 }
