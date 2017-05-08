@@ -1,3 +1,5 @@
+package addcninblue.mancala;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -13,18 +15,18 @@ public class Board {
     ArrayList<int[][]> history;
     ArrayList<Boolean> continues;
 
-    public Board(int numRows, int numCols, int numStones){
-        this.board = new int[numRows][numCols];
+    public Board(int rows, int cols, int stones){
+        this.board = new int[rows][cols];
         for(int[] row : board){
             for(int i = 0; i < row.length - 1; i++){
-                row[i] = numStones;
+                row[i] = stones;
             }
         }
-        this.numRows = numRows;
-        this.numCols = numCols;
-        this.numStones = numStones;
-        this.history = new ArrayList<>();
-        this.continues = new ArrayList<>();
+        this.numRows = rows;
+        this.numCols = cols;
+        this.numStones = stones;
+        this.history = new ArrayList<int[][]>(); //changed diamond operators for compatibility
+        this.continues = new ArrayList<Boolean>();
     }
 
     public boolean move(int position, int row, boolean saveState){
@@ -99,16 +101,6 @@ public class Board {
             }
         }
         return sum;
-    }
-
-    public void printBoard(){
-        // I apologize for this ugliness
-        // Built with Vim and a lot of patience
-        int[] row0 = board[0];
-        int[] row1 = board[1];
-        String str = "     5  4  3  2  1  0\n┌──┬──┬──┬──┬──┬──┬──┬──┐\n│  │%2d│%2d│%2d│%2d│%2d│%2d│  │\n│%2d├──┼──┼──┼──┼──┼──┤%2d│\n│  │%2d│%2d│%2d│%2d│%2d│%2d│  │\n└──┴──┴──┴──┴──┴──┴──┴──┘\n     0  1  2  3  4  5\n";
-        System.out.format(str, row0[5], row0[4], row0[3], row0[2], row0[1], row0[0], row0[6],
-                row1[6], row1[0], row1[1], row1[2], row1[3], row1[4], row1[5]);
     }
 
     public int getWinner(){

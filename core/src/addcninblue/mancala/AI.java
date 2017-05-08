@@ -1,3 +1,5 @@
+package addcninblue.mancala;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,7 +64,7 @@ public class AI implements Player {
     }
 
     private ArrayList<Integer> generateMoves(int playerNumber){
-        ArrayList<Integer> moves = new ArrayList<>();
+        ArrayList<Integer> moves = new ArrayList<Integer>(); //changed diamond operators for compatibility
         int[] row = board.getRow(playerNumber);
         for(int i = 0; i < row.length - 1; i++){
             if(row[i] != 0){
@@ -102,16 +104,6 @@ public class AI implements Player {
 
     @Override
     public String getName(){
-        return "Computer";
-    }
-
-    @Override
-    public String getFirstName(){
-        return "Computer";
-    }
-
-    @Override
-    public String getLastName(){
         return "Computer";
     }
 }
