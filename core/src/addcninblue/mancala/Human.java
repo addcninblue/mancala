@@ -1,7 +1,5 @@
 package addcninblue.mancala;
 
-import java.util.Scanner;
-
 /**
  * Created by addison on 5/1/17.
  */
@@ -13,7 +11,7 @@ public class Human implements Player{
     }
 
     @Override
-    public int getMove(){
+    public int calculateMove(){
         return -1;
     }
 

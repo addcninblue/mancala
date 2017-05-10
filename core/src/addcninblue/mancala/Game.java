@@ -1,16 +1,18 @@
 package addcninblue.mancala;
 
+import addcninblue.mancala.model.State;
 import java.util.Arrays;
-import java.util.Scanner;
+import java.util.Observable;
 
 /**
  * Created by addison on 5/1/17.
  */
-public class Game {
+public class Game extends Observable {
     private Player[] players; // only going to have 2 players max
-    private boolean win;
+    private int playerTurn;
     private Board board;
-    private Scanner input;
+
+    private State state;
     // row 0: 6 is "home", 0 - 5 is pits
     // row 1: 6 is "home", 0 - 5 is pits
     // layout:
@@ -23,44 +25,26 @@ public class Game {
 
     public Game(Player p1, Player p2) {
         players = new Player[]{p1, p2};
-        this.win = false;
-        this.board = new Board(2, 7, 4);
-        this.input = new Scanner(System.in);
+        playerTurn = 0;
+        board = new Board(2, 7, 4);
     }
 
     public void start() {
         if (Arrays.toString(players).contains("null")) {
             throw new IllegalStateException("There are not enough players to begin!");
         }
-        int playerTurn = 0;
-        System.out.println();
-
-
+        state = State.LISTENING;
     }
 
-    public void commenceTurn() {
-        boolean turnEnded = false;
-        while (!turnEnded) {
-            turnEnded = board.move(inputMove(players[playerTurn % 2]), playerTurn % 2, false);
-            printBoard();
+    public void commenceTurn(int slotId) {
+        if (state != State.LISTENING) {
+            throw new IllegalStateException("Game has not started!");
         }
-        playerTurn++;
+        if (!checkValidMove(slotId)) return;
+        playerTurn += board.move(slotId, playerTurn % 2, false) ? 1 : 0;
     }
 
-    private int inputMove(Player player) {
-        while (true) {
-            try {
-                System.out.format("%s's move: ", player.getName());
-                int choice = input.nextInt();
-                if(choice < 0 || choice > 5)
-                    throw new Exception("out of bounds");
-                return choice;
-            } catch (Exception e) {
-                System.out.println("That was not a valid input.");
-                input.nextLine();
-            }
-        }
-    }
+
 
     public void addPlayer(Player player) {
         for (int i = 0; i < players.length; i++) {
@@ -70,11 +54,27 @@ public class Game {
             }
         }
     }
-    public boolean isWon() {
-        return board.checkWin();
+
+    public boolean checkValidMove(int slotId) {
+        return board.checkValidMove(slotId);
+    }
+
+    public Player getWinner() {
+        if (board.getWinnerId() == -1) return null;
+
+        state = State.STOPPED;
+        return players[board.getWinnerId()];
+    }
+
+    public Player getActivePlayer() {
+        return players[playerTurn % 2];
     }
 
     public Board getBoard() {
         return board;
+    }
+
+    public State getState() {
+        return state;
     }
 }

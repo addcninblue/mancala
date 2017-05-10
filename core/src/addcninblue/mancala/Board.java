@@ -8,9 +8,9 @@ import java.util.Arrays;
  */
 public class Board {
     int[][] board;
-    int numRows;
-    int numCols;
-    int numStones;
+    int rows;
+    int cols;
+    int stones;
 
     ArrayList<int[][]> history;
     ArrayList<Boolean> continues;
@@ -22,9 +22,9 @@ public class Board {
                 row[i] = stones;
             }
         }
-        this.numRows = rows;
-        this.numCols = cols;
-        this.numStones = stones;
+        this.rows = rows;
+        this.cols = cols;
+        this.stones = stones;
         this.history = new ArrayList<int[][]>(); //changed diamond operators for compatibility
         this.continues = new ArrayList<Boolean>();
     }
@@ -44,10 +44,10 @@ public class Board {
         board[row][position] = 0;
         while(stones > 0){
             position++;
-            if(row != initialRow && position == numCols - 1) // if ends up in enemy home
+            if(row != initialRow && position == cols - 1) // if ends up in enemy home
                 position++;
-            row = (row + position / numCols) % 2;
-            position %= numCols;
+            row = (row + position / cols) % 2;
+            position %= cols;
             board[row][position]++;
             stones--;
         }
@@ -55,7 +55,7 @@ public class Board {
             if(position == 6) { // if ends up in own space
                 return false;
             } else if(board[row][position] > 1){
-                if(saveState){
+                if (saveState) {
                     saveState(false);
                     this.continues.add(0, true);
                 }
@@ -81,8 +81,12 @@ public class Board {
         }
     }
 
+    public boolean checkValidMove(int slotId) {
+        return (slotId > 0 && slotId < board[0].length);
+    }
+
     public boolean checkWin(){
-        return(board[0][numCols - 1] + board[1][numCols - 1] == numStones * (numCols - 1) * 2);
+        return(board[0][cols - 1] + board[1][cols - 1] == stones * (cols - 1) * 2);
     }
 
     public int[] getRow(int row){
@@ -103,10 +107,9 @@ public class Board {
         return sum;
     }
 
-    public int getWinner(){
-        if(checkWin())
-            return (board[0][numCols - 1] > board[1][numCols - 1]) ? 0 : 1;
-        return -1;
-    }
+    public int getWinnerId(){
+        if (!checkWin()) return -1;
 
+        return (board[0][cols - 1] > board[1][cols - 1]) ? 0 : 1;
+    }
 }

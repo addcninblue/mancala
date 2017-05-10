@@ -23,13 +23,27 @@ public class AI implements Player {
         this.depth = depth;
     }
 
+    public int calculateMove(){
+//        int choice = miniMax(5, true)[1]; // debug
+        int[] row = board.getRow(playerNumber);
+        for(int i = row.length - 2; i >= 0; i--){
+            if(row[i] == row.length - i - 1) {
+                System.out.println("Computer chose " + i);
+                return i;
+            }
+        }
+        int[] results = miniMax(depth, true);
+        System.out.println("Computer chose " + results[1]);
+        return (results[1] >= 0) ? results[1] : 0;
+    }
+
     /**
      * http://www3.ntu.edu.sg/home/ehchua/programming/java/javagame_tictactoe_ai.html
      * @param depth
      * @param maximize
      * @return
      */
-    public int[] miniMax(int depth, boolean maximize){
+    private int[] miniMax(int depth, boolean maximize){
         List<Integer> nextMoves = generateMoves(maximize ? playerNumber : (playerNumber + 1) % 2);
 
         int bestScore = maximize ? Integer.MIN_VALUE : Integer.MAX_VALUE;
@@ -87,20 +101,7 @@ public class AI implements Player {
         return score;
     }
 
-    @Override
-    public int getMove(){
-//        int choice = miniMax(5, true)[1]; // debug
-        int[] row = board.getRow(playerNumber);
-        for(int i = row.length - 2; i >= 0; i--){
-            if(row[i] == row.length - i - 1) {
-                System.out.println("Computer chose " + i);
-                return i;
-            }
-        }
-        int[] results = miniMax(depth, true);
-        System.out.println("Computer chose " + results[1]);
-        return (results[1] >= 0) ? results[1] : 0;
-    }
+
 
     @Override
     public String getName(){

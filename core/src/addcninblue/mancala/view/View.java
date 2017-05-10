@@ -8,7 +8,9 @@ import addcninblue.mancala.Player;
  * @author Darian
  */
 public interface View {
-    void startGame();
+    String promptString(String prompt);
+    int promptInt(String prompt);
+    void displayError(String errorMsg);
     void displayBoard(Board board);
     void displayWinner(Player winner);
 }
